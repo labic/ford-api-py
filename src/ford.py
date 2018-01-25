@@ -61,5 +61,3 @@ class Collect():
     def kill():
         pass
 
-coleta1 =Collect(query)
-print(coleta1.arguments)
