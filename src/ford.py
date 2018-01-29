@@ -6,7 +6,9 @@ data: 19/01/2018
 """
 
 from enum import Enum
-import json
+import json, os
+
+import subprocess
 
 query = {
     "source": "twitter",
@@ -37,7 +39,34 @@ query = {
     }
 }
 
+arguments = {"minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt","number":None}
 
+def type_input(data_input):
+    formats = ['tab','csv', 'txt']
+    for data_format in formats:
+        if "."+ data_format in data_input:
+            return 'file'
+    return 'argument'
+
+def terms(data_input, arguments):
+    command = "-t --twitter-data tweets -i "
+    command = command + data_input
+    arguments_str = ""
+    for argument in arguments.keys():
+        if arguments.get(argument):            
+            arguments_str =  arguments_str +  " --" +argument + " "+ str(arguments.get(argument))
+
+    command =  "ford {0} {1} -q".format(command,arguments_str)
+    execute(command)
+    
+def execute(command):
+    print(command)
+    try:
+        process = subprocess.Popen(command,cwd="/")
+        output, error = process.communicate()
+        print(process, output, error)
+    except Exception as identifier:
+        print(identifier)
 
 class Mine():
     Name = ''
@@ -48,9 +77,9 @@ class Mine():
     Timezone = 'GMT'
     MaxMemory = 1024
     
-    class Twitter():
+    def Twitter(self):
         self.command += "-t "     
-        
+
         def type_input():
             formats = ['tab','csv', 'txt']
             for format in formats:
@@ -58,7 +87,7 @@ class Mine():
                     return 'file'
             return 'argument'
 
-        class  Collect():
+        def Collect(self):
             self.command += "--twitter-data "
             Minimum =  -1
             Maximum = -1
@@ -95,7 +124,7 @@ class Mine():
                 
                 pass
         
-        class Stream():
+        def Stream():
             self.command.append("s")
             port = 8181
             ats_only = []
@@ -114,8 +143,8 @@ class Mine():
             self.command.append("t")
             pass
 
-    class Facebook():
-        class Format(Enum):
+    def Facebook():
+        def Format(Enum):
             CLASSIC = 1
             ADVANCED = 2
             REACTIONS = 3
@@ -124,7 +153,7 @@ class Mine():
 
         Format = Format.CLASSIC        
     
-        class Data():
+        def Data():
             def feeds(self):
                 pass
 
@@ -150,7 +179,7 @@ class Mine():
 
     
 
-    class Imagem():
+    def Imagem():
         """
     IMAGES: faz o download de imagens dentro de páginas ou URLs em um dataset.
     precisa alterar um arquivo de configurações chamado: /lib/basiccrawler/cfg.txt conferir
@@ -186,8 +215,5 @@ class Collect():
         pass
 
 
-Miner = Mine()
-Coleta = Collect({})
 
-
-Miner.Twitter.Collect.terms()
+terms('dilma', arguments)
