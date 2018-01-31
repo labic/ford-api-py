@@ -8,7 +8,7 @@ data: 19/01/2018
 from enum import Enum
 import json, os
 
-import subprocess
+import subprocess, threading
 
 query = {
     "source": "twitter",
@@ -48,23 +48,40 @@ def type_input(data_input):
             return 'file'
     return 'argument'
 
-def terms(data_input, arguments):
-    command = "-t --twitter-data tweets -i "
-    command = command + data_input
-    arguments_str = ""
-    for argument in arguments.keys():
-        if arguments.get(argument):            
-            arguments_str =  arguments_str +  " --" +argument + " "+ str(arguments.get(argument))
 
-    command =  "ford {0} {1} -q".format(command,arguments_str)
-    execute(command)
+class Twitter(threading.Thread):    
+    def __init__(self,data_input,arguments):
+        threading.Thread.__init__(self)        
+        self.arguments = arguments
+        self.data_input = data_input    
+
+    @staticmethod    
+    def terms(data_input, arguments):
+        command = "-t --twitter-data tweets -i "
+        command = command + data_input
+
+        command = command + " -o {0}".format(data_input)
+        arguments_str = ""
+
+        
+        for argument in arguments.keys():
+            if arguments.get(argument):            
+                arguments_str =  arguments_str +  " --" +argument + " "+ str(arguments.get(argument))
+
+        command =  "ford {0} {1} -n 100 -q".format(command,arguments_str)
+        execute_command(command)
     
-def execute(command):
+    def run  (self)  :
+        print("iniciando")
+        self.terms(self.data_input,arguments)
+    
+def execute_command(command):    
     print(command)
     try:
-        process = subprocess.Popen(command,cwd="/")
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output, error = process.communicate()
-        print(process, output, error)
+        return process
+        # print(process.pid, output, error)
     except Exception as identifier:
         print(identifier)
 
@@ -215,5 +232,19 @@ class Collect():
         pass
 
 
+a = Twitter("dilma", arguments)
+b = Twitter("lula", arguments)
+c = Twitter("tweet.csv", arguments)
 
-terms('dilma', arguments)
+a.start()
+b.start()
+c.start()
+
+# a.run()
+# b.run()
+# c.run()
+
+minhas_threads = [a,b,c]
+
+for minha_thread in minhas_threads:
+    minha_thread.join()
