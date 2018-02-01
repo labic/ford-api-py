@@ -104,3 +104,4 @@ ENV/
 .mypy_cache/
 
 \.vscode/
+src/tweets.csv
