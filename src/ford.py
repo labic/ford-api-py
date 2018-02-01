@@ -39,212 +39,162 @@ query = {
     }
 }
 
-arguments = {"minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt","number":None}
-
-def type_input(data_input):
-    formats = ['tab','csv', 'txt']
-    for data_format in formats:
-        if "."+ data_format in data_input:
-            return 'file'
-    return 'argument'
-
-
-class Twitter(threading.Thread):    
-    def __init__(self,data_input,arguments):
-        threading.Thread.__init__(self)        
+class Twitter(threading.Thread):
+    def __init__(self, collect_type, arguments):
+        threading.Thread.__init__(self)
         self.arguments = arguments
-        self.data_input = data_input    
-
-    @staticmethod    
-    def terms(data_input, arguments):
-        command = "-t --twitter-data tweets -i "
-        command = command + data_input
-
-        command = command + " -o {0}".format(data_input)
-        arguments_str = ""
-
-        
-        for argument in arguments.keys():
-            if arguments.get(argument):            
-                arguments_str =  arguments_str +  " --" +argument + " "+ str(arguments.get(argument))
-
-        command =  "ford {0} {1} -n 100 -q".format(command,arguments_str)
-        execute_command(command)
+        self.collect_type = collect_type
     
-    def run  (self)  :
-        print("iniciando")
-        self.terms(self.data_input,arguments)
+    @staticmethod
+    def make_arguments(arguments):
+        arguments_str = ""
+        for argument in arguments.keys():
+            if arguments.get(argument):
+                arguments_str = arguments_str + " --" +argument + " "+ str(arguments.get(argument))
+        return arguments_str
+
+    @classmethod
+    def terms(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data tweets -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+
+    @classmethod
+    def tweet_ids(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data tweets-ids -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+
+    @classmethod    
+    def timelines(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data timelines -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+        
+    @classmethod
+    def timelines(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data timelines -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+    
+    @classmethod
+    def users(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data users -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+
+    @classmethod
+    def friends(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data friends -o coletas/{0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+
+    @classmethod        
+    def followers(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data followers -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        print(command)
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+
+    @classmethod
+    def retweets(cls):
+        arguments_str = cls.make_arguments(self.arguments)
+        command = "ford -t --twitter-data retweets -o {0} {1} -n 100 -q".format(arguments.get("output"),arguments_str )
+        try:
+            self.process = execute_command(command)
+        except expression as identifier:
+            print(identifier)
+        
+    def stop():
+        pass
+
+    def run(self):
+        if self.collect_type is "collect":
+            data = self.arguments.get("data")
+            if data is "terms":
+                terms()                
+            elif data is "tweet_ids":
+                self.tweet_ids()                
+            elif data is "timelines":
+                timelines()                
+            elif data is "users":
+                users()                
+            elif data is "friends":
+                friends()                
+            elif data is "followers":
+                followers()
+            elif data is "retweets":
+                retweets()                
+        elif self.collect_type is "stream":
+            stream()
+        elif self.collect_type is "replies":
+            replies()
+        elif self.collect_type is "scrap":
+            scrap()
     
 def execute_command(command):    
     print(command)
     try:
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         output, error = process.communicate()
-        return process
-        # print(process.pid, output, error)
+        return process        
     except Exception as identifier:
-        print(identifier)
-
-class Mine():
-    Name = ''
-    command = ""
-    ## ford config
-    Input = ''
-    Output = ''
-    Timezone = 'GMT'
-    MaxMemory = 1024
-    
-    def Twitter(self):
-        self.command += "-t "     
-
-        def type_input():
-            formats = ['tab','csv', 'txt']
-            for format in formats:
-                if "."+format in self.Input:
-                    return 'file'
-            return 'argument'
-
-        def Collect(self):
-            self.command += "--twitter-data "
-            Minimum =  -1
-            Maximum = -1
-            Days = 1
-            Geocodes = []
-            def terms(self):
-                self.command += "terms "
-
-                print(self.command)
-                pass
-            
-            def tweet_ids(self):
-                self.command += "tweet-ids "
-                pass
-
-            def timelines(self):
-                self.command += "timelines "
-                pass
-
-            def users(self):
-                self.command += "users "
-                pass
-            
-            def friends(self):
-                self.command += "friends "
-                pass
-
-            def followers(self):
-                self.command += "followers "
-                pass
-
-            def retweets(self):
-                self.command += "retweets "
-                
-                pass
+        raise identifier
         
-        def Stream():
-            self.command.append("s")
-            port = 8181
-            ats_only = []
-            rts_only = []
-            no_gephi  = False
-
-        def replies(self):
-            self.command.append("r")
-            pass
-
-        def scrap(self):
-            self.command.append("w")
-            pass    
-
-        def treding_topics(self):
-            self.command.append("t")
-            pass
-
-    def Facebook():
-        def Format(Enum):
-            CLASSIC = 1
-            ADVANCED = 2
-            REACTIONS = 3
-            SPLIT = 4
-            BASIC = 5
-
-        Format = Format.CLASSIC        
-    
-        def Data():
-            def feeds(self):
-                pass
-
-            def pages(self):
-                pass
-
-            def members(self):
-                pass
-
-            def post_ids(self):
-                pass
-            def shares(self):
-                pass            
-            def comments(self):
-                pass
-
-        def feeds(self):
-            pass
-        def hashtag(self):
-            pass
-        def search(self):
-            pass
-
-    
-
-    def Imagem():
-        """
-    IMAGES: faz o download de imagens dentro de páginas ou URLs em um dataset.
-    precisa alterar um arquivo de configurações chamado: /lib/basiccrawler/cfg.txt conferir
-    deve-se especificar a coluna do usuário 
-    """
-        def download():
-            pass
-class Collect():
-    pid = 0
-    priority = 0
-    source = ""
-    type = ""
-    arguments = {}
-
-    def __init__(self,query):
-        self.source = query.get("source") or self.source
-        self.type = query.get("type")
-        self.arguments = query.get("arguments")
-        self.flashback_data = query.get("flashback_data")
-        
-    def twitter(self, arguments):
-        self.source = "twitter"
-        pass
-
-    def facebook(self, arguments):
-        self.source = "facebook"
-        pass
-    
-    def restart(self):
-        pass
-
-    def kill():
-        pass
+arguments1 = {"input":"dilma", "output":"coletas/dilma", "data":"terms", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments2 = {"input":"lula", "output":"coletas/lula", "data":"tweet_ids", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments3 = {"input":"enem", "output":"coletas/enem", "data":"timelines", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments4 = {"input":"dica", "output":"coletas/dica", "data":"friends", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments5 = {"input":"wifi", "output":"coletas/wifi", "data":"followers", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments6 = {"input":"politica", "output":"coletas/politica", "data":"retweets", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
+arguments7 = {"input":"agua", "output":"coletas/agua", "data":"replies", "minimum":None, "maximum":None, "days":1, "geocodes":[], "lang":"pt", "number":None}
 
 
-a = Twitter("dilma", arguments)
-b = Twitter("lula", arguments)
-c = Twitter("tweet.csv", arguments)
 
-a.start()
-b.start()
-c.start()
+coleta1 = Twitter("collect", arguments1)
+coleta2 = Twitter("collect", arguments2)
+coleta3 = Twitter("collect", arguments3)
+coleta4 = Twitter("collect", arguments4)
+coleta5 = Twitter("collect", arguments5)
+coleta6 = Twitter("collect", arguments6)
+coleta7 = Twitter("collect", arguments7)
 
-# a.run()
-# b.run()
-# c.run()
+coleta1.start()
+coleta2.start()
+coleta3.start()
+coleta4.start()
+coleta5.start()
+coleta6.start()
+coleta7.start()
 
-minhas_threads = [a,b,c]
+minhas_threads = [coleta1,coleta2,coleta3,coleta4,coleta5,coleta6,coleta7]
 
 for minha_thread in minhas_threads:
     minha_thread.join()
