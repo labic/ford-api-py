@@ -47,7 +47,7 @@ class Twitter(threading.Thread):
     
     @staticmethod
     def make_arguments(arguments):
-        arguments_str = ""
+        arguments_str = ""        
         for argument in arguments.keys():
             if arguments.get(argument):
                 arguments_str = arguments_str + " --" +argument + " "+ str(arguments.get(argument))
@@ -139,25 +139,25 @@ class Twitter(threading.Thread):
         if self.collect_type is "collect":
             data = self.arguments.get("data")
             if data is "terms":
-                terms()                
+                self.terms()                
             elif data is "tweet_ids":
                 self.tweet_ids()                
             elif data is "timelines":
-                timelines()                
+                self.timelines()                
             elif data is "users":
-                users()                
+                self.users()                
             elif data is "friends":
-                friends()                
+                self.friends()                
             elif data is "followers":
-                followers()
+                self.followers()
             elif data is "retweets":
-                retweets()                
+                self.retweets()                
         elif self.collect_type is "stream":
-            stream()
+            self.stream()
         elif self.collect_type is "replies":
-            replies()
+            self.replies()
         elif self.collect_type is "scrap":
-            scrap()
+            self.scrap()
     
 def execute_command(command):    
     print(command)
